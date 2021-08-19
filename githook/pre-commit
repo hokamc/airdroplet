@@ -1,0 +1,16 @@
+#!/bin/bash
+
+STAGED_GO_FILES=$(diff <(git diff --cached --name-only -- '*.*.go') <(git diff --cached --name-only -- '*.go'))
+
+if [[ $STAGED_GO_FILES == "" ]]; then
+    echo "No Go Files to Update"
+else
+    go vet ./airdroplet_server
+    for file in $STAGED_GO_FILES; do
+      if [[ $file == *"go"* ]]; then
+        goimports -w $file
+        gofmt -w -s $file
+        revive -config revive.toml $file
+      fi
+    done
+fi
