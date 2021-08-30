@@ -1,6 +1,7 @@
 package signaling
 
 import (
+	"context"
 	"fmt"
 	"github.com/gorilla/websocket"
 )
@@ -10,7 +11,9 @@ type MessageHandler struct {
 	connectionManager *WebsocketConnectionManager
 }
 
-func (handler *MessageHandler) handle() {
+func (handler *MessageHandler) handle(ctx context.Context) {
+	defer handler.conn.Close()
+
 	for {
 		_, message, err := handler.conn.ReadMessage()
 		if err != nil {
